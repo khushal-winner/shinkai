@@ -29,7 +29,7 @@ import { updateUser } from "@/actions/user";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 const OnboardingForm = ({ industries }) => {
-  const [selectedIndustry, setSelectedIndusty] = useState(null);
+  const [selectedIndustry, setSelectedIndustry] = useState(null);
   const router = useRouter();
 
   const {
@@ -67,9 +67,16 @@ const OnboardingForm = ({ industries }) => {
         ...values,
         industry: formattedIndustry,
       });
-    } catch (error) {}
-    console.log("Form submitted");
-    console.log(values);
+
+      console.log("Form submitted");
+      toast.success("Form submitted successfully");
+
+      console.log("Ye values jati hai as data", values);
+    } catch (error) {
+      console.error("Error submitting form:", error.message);
+      toast.error("Error submitting form");
+      throw new Error("Failed to submit form");
+    }
   };
   return (
     <div className="max-w-2xl mx-auto ">
@@ -84,7 +91,7 @@ const OnboardingForm = ({ industries }) => {
                 <Select
                   onValueChange={(value) => {
                     setValue("industry", value);
-                    setSelectedIndusty(
+                    setSelectedIndustry(
                       industries.find((industry) => industry.id === value)
                     );
                     setValue("subIndustry", "");
@@ -99,7 +106,7 @@ const OnboardingForm = ({ industries }) => {
                         className="flex justify-center"
                         key={industry.id}
                         value={industry.id}
-                        onClick={() => setSelectedIndusty(industry)}
+                        onClick={() => setSelectedIndustry(industry)}
                       >
                         {industry.name}
                       </SelectItem>

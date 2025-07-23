@@ -14,7 +14,7 @@ export const onboardingSchema = z.object({
     .pipe(
       z
         .number()
-        .min(0, "Experience must be atleast 0 years")
+        .min(0, "Experience must be at least 0 years")
         .max(50, "Experience cannot exceed 50 years")
         .optional()
     ),
