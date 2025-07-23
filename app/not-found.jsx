@@ -9,6 +9,9 @@ export default function NotFound() {
       <p className="text-muted-foreground text-center">
         Oops! The page you are looking for does not exist or has been moved.
       </p>
+      <p className="text-muted-foreground text-center">
+        Fun fact: Shinkai (深海) is a Japanese word that means "deep sea." 🌊
+      </p>
 
       <Button asChild>
         <Link className="text-center" href="/">
