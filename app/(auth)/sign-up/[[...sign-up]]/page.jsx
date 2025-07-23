@@ -3,7 +3,7 @@ import React from "react";
 
 const SignUpPage = () => {
   return (
-    <div>
+    <div className="flex mb-10">
       <SignUp
         appearance={{
           elements: {
