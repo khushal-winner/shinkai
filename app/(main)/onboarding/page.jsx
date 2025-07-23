@@ -13,7 +13,7 @@ const OnboardingPage = async () => {
   }
 
   return (
-    <div>
+    <div className="w-full ">
       <OnboardingForm industries={industries} />
     </div>
   );

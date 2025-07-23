@@ -15,7 +15,7 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "bio" TEXT,
-    "experience" TEXT,
+    "experience" INTEGER,
     "skills" TEXT[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -33,7 +33,7 @@ CREATE TABLE "IndustryInsight" (
     "keyTrends" TEXT[],
     "recommendedSkills" TEXT[],
     "lastUpdated" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "nextUpdate" TIMESTAMP(3) NOT NULL,
+    "nextUpdatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "IndustryInsight_pkey" PRIMARY KEY ("id")
 );
