@@ -1,9 +1,7 @@
 "use server";
-
-import { MarketOutlook } from "@/lib/generated/prisma/client";
-import { DemandLevel } from "@/lib/generated/prisma/client";
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { generateAIInsights } from "./dashboard";
 
 export async function updateUser(data) {
   const { userId } = await auth();
@@ -18,6 +16,9 @@ export async function updateUser(data) {
   if (!user) throw new Error("User not found");
 
   try {
+    console.log("AI check started");
+    const insights = await generateAIInsights(data.industry);
+    console.log("AI insights", insights);
     const result = await db.$transaction(
       async (tx) => {
         // find if the industry exists
@@ -32,13 +33,7 @@ export async function updateUser(data) {
           industryInsight = await tx.industryInsight.create({
             data: {
               industry: data.industry,
-              salaryRanges: [], // default values
-              growthRate: 0, // default values
-              demandLevel: "MEDIUM", // default values
-              topSkills: [], // default values
-              marketOutlook: "NEUTRAL", // default values
-              keyTrends: [], // default values
-              recommendedSkills: [], // default values
+              ...insights,
               nextUpdatedAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
             },
           });

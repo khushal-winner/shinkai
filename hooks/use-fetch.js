@@ -16,10 +16,10 @@ const useFetch = (cb) => {
       setError(null);
     } catch (error) {
       setError(error);
+      console.error("Error fetching data:", error);
       toast.error(error.message);
     } finally {
       setLoading(false);
-      toast.success("Profile Updated Successfully");
     }
   };
   return { data, loading, error, fn, setData };
