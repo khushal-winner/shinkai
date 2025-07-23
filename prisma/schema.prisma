@@ -27,7 +27,7 @@ model User {
 
   //Profile fields
   bio         String?
-  experience  String?
+  experience  Int?
   skills      String[]
 
   // Relations
@@ -61,7 +61,7 @@ model IndustryInsight {
   recommendedSkills String[]   // array of recommended for the industry
   
   lastUpdated DateTime  @default(now())
-  nextUpdate   DateTime  
+  nextUpdatedAt   DateTime  
 
   @@index([industry])
 }

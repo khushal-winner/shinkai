@@ -34,9 +34,9 @@ export async function updateUser(data) {
               industry: data.industry,
               salaryRanges: [], // default values
               growthRate: 0, // default values
-              demandLevel: DemandLevel.MEDIUM, // default values
+              demandLevel: "MEDIUM", // default values
               topSkills: [], // default values
-              marketOutlook: MarketOutlook.NEUTRAL, // default values
+              marketOutlook: "NEUTRAL", // default values
               keyTrends: [], // default values
               recommendedSkills: [], // default values
               nextUpdatedAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
@@ -67,7 +67,7 @@ export async function updateUser(data) {
     );
   } catch (error) {
     console.log("Error in updateUser", error.message);
-    throw new Error("Failed to Update Profile");
+    throw new Error("Failed to Update Profile", { cause: error.message });
   }
 }
 
