@@ -43,7 +43,7 @@ const HeroSection = () => {
       <div className="flex justify-center gap-4 mt-3">
         <Button
           onClick={() => {
-            router.push("/dashboard");
+            router.push("/onboarding");
             console.log("clicked");
           }}
           size="lg"
