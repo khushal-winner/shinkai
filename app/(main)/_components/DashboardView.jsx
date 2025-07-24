@@ -134,7 +134,7 @@ const DashboardView = ({ insights }) => {
     { addSuffix: true }
   );
   return (
-    <div className="space-y-5 mb-96 sm:mb-20 md:mb-10">
+    <div className="space-y-5 mb-72 sm:mb-16 ">
       <div>
         <Badge variant="outline">Last Updated: {lastUpdatedDate}</Badge>
       </div>
@@ -255,7 +255,7 @@ const DashboardView = ({ insights }) => {
           </ResponsiveContainer>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-20 h-fit">
           <div className="h-full">
             <Card className="flex flex-col justify-between h-full">
               <CardHeader className="flex justify-between items-center w-full">
@@ -281,25 +281,24 @@ const DashboardView = ({ insights }) => {
           </div>
 
           <div className="h-full">
-            <Card className="flex flex-col justify-between h-full">
+            <Card className="flex flex-col h-full">
               <CardHeader className="flex justify-between items-center w-full">
                 <CardTitle className="flex flex-col w-full">
-                  <h2 className="font-bold text-lg">Key Industry Trends</h2>
+                  <h2 className="font-bold text-lg">Recommended SKills</h2>
                   <p className="text-muted-foreground text-sm">
-                    Current trends shaping the industry
+                    Skills to consider developing
                   </p>
                 </CardTitle>
                 <Brain className={`h-6 w-6 -translate-y-1.5 `} />
               </CardHeader>
               <CardContent className="flex flex-col w-full gap-2 ">
-                <ul className="space-y-2">
-                  {insights.keyTrends.map((trend, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <div className="h-2 w-2 bg-primary rounded-full mt-2"></div>
+                <div>
+                  {insights.recommendedSkills.map((trend, index) => (
+                    <Badge variant="outline" className="space-y-2">
                       <span>{trend}</span>
-                    </li>
+                    </Badge>
                   ))}
-                </ul>
+                </div>
               </CardContent>
             </Card>
           </div>
