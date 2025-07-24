@@ -40,6 +40,9 @@ AI-powered career companion for modern professionals, revolutionizing the job se
 - shadcn
 - prsima, neonDB
 - react-spinners
+- recharts
+- badge(shadcn)
+- date-fns
 
 ## 🔧 Installation
 

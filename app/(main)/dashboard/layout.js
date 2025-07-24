@@ -3,9 +3,9 @@ import { BarLoader } from "react-spinners";
 
 const layout = ({ children }) => {
   return (
-    <div className="px-3">
-      <div className="flex items-center justify-between mb-5">
-        <h1 className="text-3xl font-bold gradient-title gradient">
+    <div className="px-3 h-full w-full mt-4 mb-56 sm:mb-24">
+      <div className="flex justify-between mb-3">
+        <h1 className="text-4xl font-bold gradient-title gradient">
           Industry Insights
         </h1>
       </div>
