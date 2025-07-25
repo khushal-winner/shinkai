@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { BarLoader } from "react-spinners";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -154,13 +155,20 @@ const Quiz = () => {
         </Button>
 
         <Button
-          disabled={!answer[currentQuestion]}
+          disabled={!answer[currentQuestion] || savingResult}
           className="ml-auto"
           onClick={handleNext}
         >
-          {currentQuestion < quizData.length - 1
-            ? "Next Question"
-            : "Finish Quiz"}
+          {currentQuestion < quizData.length - 1 ? (
+            "Next Question"
+          ) : savingResult ? (
+            <>
+              <Loader2 className=" h-4 w-4 animate-spin" />
+              <span>Saving...</span>
+            </>
+          ) : (
+            "Finish Quiz"
+          )}
         </Button>
       </CardFooter>
     </Card>
