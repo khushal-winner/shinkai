@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 export default function Home() {
   return (
-    <div className="relative">
+    <div className="relative -mb-64">
       {/* Background Layer */}
       <div className="grid-background flex mt-18"></div>
 
