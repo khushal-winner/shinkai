@@ -10,7 +10,9 @@ const layout = ({ children }) => {
         </h1>
       </div>
       <Suspense
-        fallback={<BarLoader color="gray" className="mx-auto w-full mt-4" />}
+        fallback={
+          <BarLoader color="gray" width={"100%"} className="mx-auto mt-4" />
+        }
       >
         {children}
       </Suspense>

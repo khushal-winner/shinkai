@@ -43,6 +43,7 @@ AI-powered career companion for modern professionals, revolutionizing the job se
 - recharts
 - badge(shadcn)
 - date-fns
+- npm i tailwind-scrollbar-hide
 
 ## 🔧 Installation
 
