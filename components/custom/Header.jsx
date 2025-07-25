@@ -71,7 +71,7 @@ const Header = async () => {
             <DropdownMenuContent>
               <DropdownMenuItem>
                 <Link
-                  href="/resume-builder"
+                  href="/resume"
                   className="flex items-center justify-center"
                 >
                   <FileText className="mr-2" />
@@ -80,7 +80,7 @@ const Header = async () => {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link
-                  href="/resume-builder"
+                  href="/ai-cover-letter"
                   className="flex items-center justify-center"
                 >
                   <PenBox className="mr-2" />
@@ -89,7 +89,7 @@ const Header = async () => {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link
-                  href="/resume-builder"
+                  href="/interview"
                   className="flex items-center justify-center"
                 >
                   <GraduationCap className="mr-2" />
