@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { BarLoader } from "react-spinners";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import QuizResult from "./QuizResult";
 
 const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -82,12 +83,16 @@ const Quiz = () => {
     return (score / quizData.length) * 100;
   };
 
+  const startNewQuiz = () => {
+    setResultData(null); // clear previous result
+    generateQuizFn(); // generate a new quiz
+  };
+
   // show result if quiz is completed
   if (resultData) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h2 className="text-2xl font-bold mb-4">Quiz Completed!</h2>
-        <p className="text-lg">Your score: {resultData.quizScore}%</p>
+      <div className=" h-screen">
+        <QuizResult result={resultData} onStartNew={startNewQuiz} />
       </div>
     );
   }
