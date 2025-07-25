@@ -39,16 +39,17 @@ const QuizResult = ({ result, hideStartNew = false, onStartNew }) => {
             <h3 className="font-medium text-3xl">Question Review</h3>
             {result.questions.map((question, index) => (
               <div key={index} className="space-y-4 border rounded-2xl p-2 ">
-                <div className="sm:flex sm:justify-between">
+                <div className="flex justify-between">
                   <h4 className="font-bold">
                     Que {index + 1} : {question.question}
                   </h4>
-
-                  {question.isCorrect ? (
-                    <CheckCircle2 className="h-4 w-4 mt-2 sm:mt-0 text-green-600" />
-                  ) : (
-                    <XCircle className="h-4 w-4 mt-2 sm:mt-0 text-red-600" />
-                  )}
+                  <div>
+                    {question.isCorrect ? (
+                      <CheckCircle2 className="h-4 w-4 mt-2 sm:mt-0 text-green-600" />
+                    ) : (
+                      <XCircle className="h-4 w-4 mt-2 sm:mt-0 text-red-600" />
+                    )}
+                  </div>
                 </div>
 
                 <div>

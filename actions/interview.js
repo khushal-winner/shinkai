@@ -136,3 +136,38 @@ export async function saveQuizResult(questions, answers, score) {
     throw new Error("Failed to save quiz result");
   }
 }
+
+export async function getAssessments() {
+  const { userId } = await auth();
+
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: {
+      clerkUserId: userId,
+    },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  try {
+    const assessments = await db.assessment.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      // EXPLAIN: This is a query to fetch all assessments for the current user.
+      // The orderBy clause is used to sort the results in ascending order of
+      // creation time. This means that the most recent assessment will be first
+      // in the list. The take clause is used to limit the results to 10
+      // assessments.
+    });
+
+    return assessments;
+  } catch (error) {
+    console.error("Error fetching assessments:", error.message);
+    throw new Error("Failed to fetch assessments");
+  }
+}
