@@ -29,7 +29,7 @@ const HeroSection = () => {
     };
   }, []);
   return (
-    <div className="flex flex-col items-center ">
+    <div className="flex flex-col items-center">
       <div className="flex flex-col justify-center w-full pt-36 md:pt-48 space-y-2 ">
         <h1 className="text-center text-3xl md:text-5xl font-bold gradient-title gradient">
           Your AI Powered Career Companion For <br /> Professional Success
