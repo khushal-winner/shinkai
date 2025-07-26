@@ -1,6 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { DownloadCloud, Save } from "lucide-react";
+import {
+  AlertTriangle,
+  Download,
+  DownloadCloud,
+  Edit,
+  Eye,
+  Loader2,
+  Save,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Controller, useForm } from "react-hook-form";
@@ -9,9 +17,19 @@ import { Input } from "@/components/ui/input";
 import { resumeSchema } from "@/app/lib/schema";
 import { Textarea } from "@/components/ui/textarea";
 import EntryForm from "./EntryForm";
+import MDEditor from "@uiw/react-md-editor";
+import { entriesToMarkdown } from "@/app/lib/helper";
+import { useUser } from "@clerk/nextjs";
+import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
 
 const ResumeBuilder = ({ initialContent }) => {
   const [activeTab, setActiveTab] = useState("edit");
+  const [resumeMode, setResumeMode] = useState("preview");
+  const [previewContent, setPreviewContent] = useState(initialContent);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const { user } = useUser();
 
   const {
     control,
@@ -34,12 +52,185 @@ const ResumeBuilder = ({ initialContent }) => {
   const formValues = watch();
 
   useEffect(() => {
+    if (activeTab === "edit") {
+      const newContent = getCombinedContent();
+      setPreviewContent(newContent ? newContent : initialContent);
+    }
+  }, [formValues, activeTab]);
+
+  useEffect(() => {
     if (initialContent) setActiveTab("preview");
   }, [initialContent]);
 
   const onSubmit = (data) => {
     console.log(data);
   };
+
+  const getContactMarkdown = () => {
+    const { contactInfo } = formValues;
+    const parts = [];
+    if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
+    if (contactInfo.mobile) parts.push(`📱 ${contactInfo.mobile}`);
+    if (contactInfo.linkedin)
+      parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
+    if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
+
+    return parts.length > 0
+      ? `## <div align="center">${user.fullName}</div>
+        \n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`
+      : "";
+  };
+
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Returns a single string containing the combined content of the resume
+   * from the form values, with each section separated by two newlines.
+   *
+   * @returns {string} The combined content of the resume
+   */
+  /*******  97ec971f-5424-4fbb-85e8-899d4f7fc27a  *******/
+  const getCombinedContent = () => {
+    const { summary, skills, education, experience, projects } = formValues;
+
+    const sections = [
+      getContactMarkdown(),
+      summary && `## Professional Summary\n\n${summary}`,
+      skills && `## Skills\n\n${skills}`,
+      entriesToMarkdown(education, "Education"),
+      entriesToMarkdown(experience, "Experience"),
+      entriesToMarkdown(projects, "Projects"),
+    ];
+
+    // Filter out falsy values and join into a single string
+    return sections.filter(Boolean).join("\n\n");
+  };
+
+  // Helper function - same for all options
+  const formatContentForPDF = (markdownContent) => {
+    if (!markdownContent) return "<p>No content available</p>";
+
+    return markdownContent
+      .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+      .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+      .replace(
+        /<div align="center">([^<]+)<\/div>/g,
+        '<div class="center">$1</div>'
+      )
+      .replace(/\n\n/g, "</p><p>")
+      .replace(/\n/g, "<br>")
+      .split("</p><p>")
+      .map((paragraph) => `<p>${paragraph}</p>`)
+      .join("")
+      .replace(/<p><\/p>/g, "")
+      .replace(/<p><h/g, "<h")
+      .replace(/h><\/p>/g, "h>");
+  };
+
+  // Alternative Simpler Version - Using browser's native PDF save
+  const generatePDF = () => {
+    setIsGenerating(true);
+
+    try {
+      const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Resume - ${user?.fullName || "User"}</title>
+          <meta charset="UTF-8">
+          <style>
+            body {
+              font-family: 'Times New Roman', serif;
+              line-height: 1.6;
+              color: #000;
+              background: white;
+              padding: 20mm;
+              margin: 0;
+            }
+            h1 {
+              text-align: center;
+              font-size: 24px;
+              margin-bottom: 20px;
+              border-bottom: 2px solid #333;
+              padding-bottom: 10px;
+            }
+            h2 { 
+              font-size: 18px;
+              border-bottom: 1px solid #666; 
+              padding-bottom: 5px;
+              margin-top: 25px;
+              margin-bottom: 15px;
+            }
+            h3 {
+              font-size: 16px;
+              margin-top: 15px;
+              margin-bottom: 10px;
+            }
+            p {
+              margin-bottom: 10px;
+              text-align: justify;
+            }
+            .center { text-align: center; }
+            
+            .pdf-instructions {
+              position: fixed;
+              top: 20px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #007bff;
+              color: white;
+              padding: 15px 25px;
+              border-radius: 8px;
+              font-size: 14px;
+              box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+              z-index: 1000;
+              text-align: center;
+            }
+            
+            @media print {
+              .pdf-instructions { display: none; }
+              body { margin: 0; padding: 15mm; }
+              @page { margin: 15mm; size: A4; }
+            }
+          </style>
+          <script>
+            window.onload = function() {
+              // Show instructions first
+              setTimeout(() => {
+                if(confirm('Ready to download PDF?\\n\\nClick OK to open print dialog.\\nThen select "Save as PDF" as destination.')) {
+                  window.print();
+                }
+              }, 500);
+            }
+          </script>
+        </head>
+        <body>
+          <div class="pdf-instructions">
+            📄 To save as PDF: Press Ctrl+P → Select "Save as PDF" → Click Save
+          </div>
+          ${formatContentForPDF(previewContent)}
+        </body>
+      </html>
+    `;
+
+      // Create blob and open
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+
+      // Open in new tab
+      window.open(url, "_blank");
+
+      // Cleanup
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        setIsGenerating(false);
+      }, 1000);
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="w-full space-y-4">
       <div className="flex justify-between items-center">
@@ -47,30 +238,52 @@ const ResumeBuilder = ({ initialContent }) => {
           Resume Builder
         </h1>
         <div className="flex space-x-4">
-          <Button variant={"destructive"}>
-            <span>
-              <Save className="h-4 w-4" />
-            </span>
-            Save
+          <Button
+            variant="destructive"
+            onClick={handleSubmit(onSubmit)}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Save
+              </>
+            )}
           </Button>
-          <Button>
-            <span>
-              <DownloadCloud className="h-4 w-4" />
-            </span>
-            Download PDF
+          <Button onClick={generatePDF} disabled={isGenerating}>
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating PDF...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                Download PDF
+              </>
+            )}
           </Button>
         </div>
       </div>
 
       <Tabs defaultValue="edit" className="w-full">
         <TabsList>
-          <TabsTrigger value="edit">Form</TabsTrigger>
-          <TabsTrigger value="preview">Markdown</TabsTrigger>
+          <TabsTrigger onClick={() => setActiveTab("edit")} value="edit">
+            Form
+          </TabsTrigger>
+          <TabsTrigger onClick={() => setActiveTab("preview")} value="preview">
+            Markdown
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="edit">
-          <div className="w-full space-y-4">
+          <div className="w-full space-y-4 ">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="space-y-4 w-full">
+              <div className="space-y-4 w-full ">
                 <h1 className="font-bold text-2xl">Contact Information</h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 w-full  space-y-4 bg-muted rounded-lg">
                   <div className="space-y-4 p-4">
@@ -245,7 +458,59 @@ const ResumeBuilder = ({ initialContent }) => {
             </div>
           </div>
         </TabsContent>
-        <TabsContent value="preview">Change your password here.</TabsContent>
+        <TabsContent value="preview">
+          {activeTab === "preview" && (
+            <Button
+              variant="link"
+              type="button"
+              className="mb-2"
+              onClick={() =>
+                setResumeMode(resumeMode === "preview" ? "edit" : "preview")
+              }
+            >
+              {resumeMode === "preview" ? (
+                <>
+                  <Edit className="h-4 w-4" />
+                  Edit Resume
+                </>
+              ) : (
+                <>
+                  <Eye className="h-4 w-4" />
+                  Show Preview
+                </>
+              )}
+            </Button>
+          )}
+
+          {activeTab === "preview" && resumeMode !== "preview" && (
+            <div className="flex p-3 gap-2 items-center border-2 border-yellow-600 text-yellow-600 rounded mb-2">
+              <AlertTriangle className="h-5 w-5" />
+              <span className="text-sm">
+                You will lose editied markdown if you update the form data.
+              </span>
+            </div>
+          )}
+
+          <div className="border rounded-lg ">
+            <MDEditor
+              value={previewContent}
+              onChange={setPreviewContent}
+              height={800}
+              preview={resumeMode}
+            />
+          </div>
+          <div className="hidden">
+            <div id="resume-pdf">
+              <MDEditor.Markdown
+                source={previewContent}
+                style={{
+                  background: "white",
+                  color: "black",
+                }}
+              />
+            </div>
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );

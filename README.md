@@ -44,7 +44,7 @@ AI-powered career companion for modern professionals, revolutionizing the job se
 - badge(shadcn)
 - date-fns
 - npm i tailwind-scrollbar-hide
-- npm i react-md
+- npm i @uiw/react-md-editor
 - npm i html2pdf.js@0.9.0
 
 ## 🔧 Installation
