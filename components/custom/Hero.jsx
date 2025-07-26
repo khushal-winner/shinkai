@@ -62,7 +62,7 @@ const HeroSection = () => {
         </Button>
       </div>
 
-      <div className="hero-image-wrapper mt-5  md:mt-0">
+      <div className="hero-image-wrapper">
         <div ref={imageRef} className="hero-image">
           <Image
             priority
