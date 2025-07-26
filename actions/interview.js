@@ -48,10 +48,46 @@ export async function generateQuiz() {
     const result = await model.generateContent(prompt);
     const response = result?.response;
     const text = response?.text();
-    const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
-    const quiz = JSON.parse(cleanedText);
 
-    return quiz.questions;
+    if (!text) {
+      throw new Error("Empty response from AI");
+    }
+
+    // Better cleaning
+    let cleanedText = text
+      .replace(/```(?:json)?\n?/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    // Extract JSON from response
+    const jsonMatch = cleanedText.match(/[\[\{][\s\S]*[\]\}]/);
+    if (jsonMatch) {
+      cleanedText = jsonMatch[0];
+    }
+
+    console.log("Cleaned text:", cleanedText.substring(0, 200) + "...");
+
+    let quiz;
+    try {
+      quiz = JSON.parse(cleanedText);
+    } catch (parseError) {
+      console.error("JSON Parse Error at:", parseError.message);
+      // Try fixing common issues
+      const fixedText = cleanedText
+        .replace(/,(\s*[\}\]])/g, "$1") // Remove trailing commas
+        .replace(/'/g, '"'); // Fix quotes
+
+      quiz = JSON.parse(fixedText);
+    }
+
+    // Handle both formats: direct array or {questions: [...]}
+    const questions = Array.isArray(quiz) ? quiz : quiz.questions;
+
+    if (!questions || !Array.isArray(questions)) {
+      throw new Error("Invalid quiz format");
+    }
+
+    return questions;
   } catch (error) {
     console.error("Error generating quiz:", error.message);
     throw new Error("Failed to generate quiz");

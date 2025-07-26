@@ -42,6 +42,7 @@ export async function saveResume(content) {
     // This ensures that the resume page is always up-to-date with the latest changes.
     revalidatePath("/resume");
     return resume;
+    p;
   } catch (error) {
     console.error("Error saving resume:", error);
     throw new Error("Failed to save resume");

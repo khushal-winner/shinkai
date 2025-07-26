@@ -129,7 +129,7 @@ const Quiz = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-lg font-medium">{question.question}</p>
+        <p className="text-lg mb-2 font-medium">{question.question}</p>
         <RadioGroup
           className="space-y-2"
           value={answer[currentQuestion]}
