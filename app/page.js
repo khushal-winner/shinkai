@@ -201,7 +201,7 @@ export default function Home() {
             variant={"secondary"}
             className="mx-auto mt-10 animate-bounce mb-18"
           >
-            <Link href="/onboarding">
+            <Link href="/dashboard">
               Start Your Journey Today <ChevronRight />
             </Link>
           </Button>
