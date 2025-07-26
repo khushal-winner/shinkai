@@ -133,7 +133,7 @@ export default function Home() {
                       <div>
                         <Image
                           className="cursor-pointer h-12 w-auto object-contain rounded-full"
-                          src={item.image}
+                          src={item.image || item.image2}
                           alt="logo"
                           width={100}
                           height={100}
