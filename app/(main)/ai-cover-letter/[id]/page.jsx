@@ -38,7 +38,7 @@ const CoverLetter = () => {
     <div className="h-full w-full space-y-4">
       {isFetching ? (
         <div className="mt-4">
-          <h1 className="text-6xl font-bold gradient-title gradient">
+          <h1 className="text-4xl md:text-6xl font-bold gradient-title gradient">
             Generating...
           </h1>
           <BarLoader color="gray" width={"100%"} className="mx-auto mt-4" />
@@ -54,7 +54,7 @@ const CoverLetter = () => {
                 Back to Cover Letters
               </Link>
             </Button>
-            <h1 className="text-6xl font-bold gradient-title gradient">
+            <h1 className="text-4xl md:text-6xl font-bold gradient-title gradient">
               {coverLetter?.jobTitle} at {coverLetter?.companyName}
             </h1>
           </div>

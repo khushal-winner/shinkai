@@ -52,8 +52,8 @@ const CoverLetterList = () => {
 
   return (
     <div className="h-full w-full space-y-4">
-      <div className="w-full space-y-4 flex justify-between items-center">
-        <h1 className="text-6xl font-bold gradient-title gradient">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0">
+        <h1 className=" text-4xl md:text-6xl font-bold gradient-title gradient">
           My Cover Letters
         </h1>
         <div>

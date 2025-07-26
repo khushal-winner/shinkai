@@ -331,9 +331,9 @@ const ResumeBuilder = ({ initialContent }) => {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4">
         <div>
-          <h1 className="text-6xl font-bold gradient-title gradient">
+          <h1 className="text-4xl md:text-6xl font-bold gradient-title gradient">
             Resume Builder
           </h1>
           <p>{updatedAt ? formatUpdatedAt(updatedAt) : "Not saved yet"}</p>

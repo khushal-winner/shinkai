@@ -21,6 +21,7 @@ import {
 import { faqs } from "@/data/faqs";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 export default function Home() {
   return (
     <div className="relative -mb-64">
@@ -195,11 +196,14 @@ export default function Home() {
           </p>
 
           <Button
+            asChild
             size={"lg"}
             variant={"secondary"}
             className="mx-auto mt-10 animate-bounce mb-18"
           >
-            Start Your Journey Today <ChevronRight />
+            <Link href="/onboarding">
+              Start Your Journey Today <ChevronRight />
+            </Link>
           </Button>
         </div>
       </section>

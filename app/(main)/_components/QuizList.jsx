@@ -69,7 +69,7 @@ const QuizList = ({ assessments }) => {
           open={!!selectedQuiz}
           onOpenChange={(open) => setSelectedQuiz(null)}
         >
-          <DialogContent className="max-h-[90vh] overflow-y-scroll scrollbar-hide">
+          <DialogContent className="max-h-[60vh] w-[80vw] md:max-h-[90vh] overflow-y-scroll scrollbar-hide">
             <DialogHeader>
               <DialogDescription>
                 <QuizResult

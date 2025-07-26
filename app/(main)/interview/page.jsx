@@ -22,9 +22,9 @@ const InterviewPage = async () => {
   const assessments = await getAssessments();
 
   return (
-    <div className="space-y-4  w-full px-4 mb-12">
-      <div className="w-full flex justify-between items-center">
-        <h1 className="text-5xl font-bold gradient-title gradient">
+    <div className="space-y-4  w-full md:px-4 mb-12">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4">
+        <h1 className="text-4xl md:text-6xl font-bold gradient-title gradient">
           Interview Prepration
         </h1>
         <Button asChild>
