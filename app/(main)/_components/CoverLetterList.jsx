@@ -84,52 +84,60 @@ const CoverLetterList = () => {
             <BarLoader color="gray" width={"100%"} className="mx-auto mt-4" />
           </div>
         ) : (
-          Array.isArray(coverLetters) &&
-          coverLetters.length > 0 &&
-          coverLetters.map((coverLetter) => (
-            <div
-              key={coverLetter.id}
-              className="w-full space-y-2 rounded-xl border p-4"
-            >
-              <div className="flex justify-between">
-                <h1 className="text-2xl font-bold">
-                  {coverLetter.jobTitle} at {coverLetter.companyName}
-                </h1>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setRedirectingId(coverLetter.id);
-                      router.push(`/ai-cover-letter/${coverLetter.id}`);
-                    }}
+          <>
+            {Array.isArray(coverLetters) && coverLetters.length > 0 ? (
+              <>
+                {coverLetters.map((coverLetter) => (
+                  <div
+                    key={coverLetter.id}
+                    className="w-full space-y-2 rounded-xl border p-4"
                   >
-                    {redirectingId === coverLetter.id ? (
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                    ) : (
-                      <Eye className="h-6 w-6" />
-                    )}
-                  </Button>
+                    <div className="flex justify-between">
+                      <h1 className="text-2xl font-bold">
+                        {coverLetter.jobTitle} at {coverLetter.companyName}
+                      </h1>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setRedirectingId(coverLetter.id);
+                            router.push(`/ai-cover-letter/${coverLetter.id}`);
+                          }}
+                        >
+                          {redirectingId === coverLetter.id ? (
+                            <Loader2 className="h-6 w-6 animate-spin" />
+                          ) : (
+                            <Eye className="h-6 w-6" />
+                          )}
+                        </Button>
 
-                  <Button
-                    onClick={() => handleDelete(coverLetter.id)}
-                    variant="outline"
-                  >
-                    {deletingId === coverLetter.id ? (
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                    ) : (
-                      <Trash2 className="h-6 w-6" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {formatCreatedAt(coverLetter.createdAt)}
-              </p>
+                        <Button
+                          onClick={() => handleDelete(coverLetter.id)}
+                          variant="outline"
+                        >
+                          {deletingId === coverLetter.id ? (
+                            <Loader2 className="h-6 w-6 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-6 w-6" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {formatCreatedAt(coverLetter.createdAt)}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {coverLetter.jobDescription}
+                    </p>
+                  </div>
+                ))}
+              </>
+            ) : (
               <p className="text-muted-foreground">
-                {coverLetter.jobDescription}
+                You have not created any cover letters yet.
               </p>
-            </div>
-          ))
+            )}
+          </>
         )}
       </div>
     </div>

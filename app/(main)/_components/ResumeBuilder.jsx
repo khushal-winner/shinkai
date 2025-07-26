@@ -20,13 +20,34 @@ import EntryForm from "./EntryForm";
 import MDEditor from "@uiw/react-md-editor";
 import { entriesToMarkdown } from "@/app/lib/helper";
 import { useUser } from "@clerk/nextjs";
-import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
+import useFetch from "@/hooks/use-fetch";
+import { getResume, saveResume } from "@/actions/resume";
+import { toast } from "sonner";
+import { format } from "date-fns";
+
+function formatUpdatedAt(date) {
+  return `Last Updated at ${format(
+    new Date(date),
+    "MMMM do, yyyy 'at' hh:mm a"
+  )}`;
+}
+
+const handleExportPDF = async () => {
+  const html2pdf = (await import("html2pdf.js")).default;
+
+  const element = document.getElementById("pdf-content");
+  if (!element) return;
+
+  html2pdf().from(element).save();
+};
 
 const ResumeBuilder = ({ initialContent }) => {
+  const [updatedAt, setUpdatedAt] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [activeTab, setActiveTab] = useState("edit");
   const [resumeMode, setResumeMode] = useState("preview");
   const [previewContent, setPreviewContent] = useState(initialContent);
-  const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const { user } = useUser();
@@ -36,11 +57,17 @@ const ResumeBuilder = ({ initialContent }) => {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(resumeSchema),
     defaultValues: {
-      contactInfo: {},
+      contactInfo: {
+        email: "", // ✅ Must have these for register to work
+        mobile: "",
+        linkedin: "",
+        twitter: "",
+      },
       summary: "",
       skills: "",
       experience: [],
@@ -49,8 +76,20 @@ const ResumeBuilder = ({ initialContent }) => {
     },
   });
 
+  const {
+    loading: isSaving,
+    fn: saveResumeFn,
+    data: saveResult,
+    error: saveError,
+  } = useFetch(saveResume);
+
   const formValues = watch();
 
+  // useEffect(() => {
+  //   if (initialContent) setActiveTab("preview");
+  // }, [initialContent]);
+
+  // Update preview content when form values change
   useEffect(() => {
     if (activeTab === "edit") {
       const newContent = getCombinedContent();
@@ -58,13 +97,56 @@ const ResumeBuilder = ({ initialContent }) => {
     }
   }, [formValues, activeTab]);
 
+  // Handle save result
   useEffect(() => {
-    if (initialContent) setActiveTab("preview");
-  }, [initialContent]);
+    if (activeTab === "edit" && resumeMode === "preview") {
+      const timeout = setTimeout(() => {
+        const newContent = getCombinedContent();
+        setPreviewContent(newContent || "");
+      }, 500);
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+      return () => clearTimeout(timeout);
+    }
+  }, [formValues, activeTab, resumeMode]);
+
+  useEffect(() => {
+    const fetchAndPrefill = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getResume();
+        console.log("Fetched data:", data); // Debug log
+
+        if (data) {
+          const formData = {
+            contactInfo: {
+              email: data.contactInfo?.email || "",
+              mobile: data.contactInfo?.mobile || "",
+              linkedin: data.contactInfo?.linkedin || "",
+              twitter: data.contactInfo?.twitter || "",
+            },
+            summary: data.summary || "",
+            skills: data.skills || "",
+            education: data.education || [],
+            experience: data.experience || [],
+            projects: data.projects || [],
+          };
+
+          console.log("Resetting form with:", formData); // Debug log
+          reset(formData);
+
+          if (data.updatedAt) {
+            setUpdatedAt(data.updatedAt);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching resume:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAndPrefill();
+  }, [reset]);
 
   const getContactMarkdown = () => {
     const { contactInfo } = formValues;
@@ -231,12 +313,32 @@ const ResumeBuilder = ({ initialContent }) => {
     }
   };
 
+  const onSubmit = async (data) => {
+    try {
+      const formattedContent = previewContent
+        .replace(/\n/g, "\n") // Normalize newlines
+        .replace(/\n\s*\n/g, "\n\n") // Normalize multiple newlines to double newlines
+        .trim();
+
+      console.log(previewContent, formattedContent);
+      await saveResumeFn(previewContent);
+      const updated = await getResume();
+      if (updated?.updatedAt) setUpdatedAt(updated.updatedAt);
+    } catch (error) {
+      console.error("Save error:", error);
+    }
+  };
+
   return (
     <div className="w-full space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-6xl font-bold gradient-title gradient">
-          Resume Builder
-        </h1>
+        <div>
+          <h1 className="text-6xl font-bold gradient-title gradient">
+            Resume Builder
+          </h1>
+          <p>{updatedAt ? formatUpdatedAt(updatedAt) : "Not saved yet"}</p>
+        </div>
+
         <div className="flex space-x-4">
           <Button
             variant="destructive"
@@ -255,6 +357,7 @@ const ResumeBuilder = ({ initialContent }) => {
               </>
             )}
           </Button>
+
           <Button onClick={generatePDF} disabled={isGenerating}>
             {isGenerating ? (
               <>
