@@ -71,6 +71,9 @@ const OnboardingForm = ({ industries }) => {
       console.log("Form submitted");
       toast.success("Form submitted successfully");
 
+      router.push("/dashboard");
+      router.refresh();
+
       console.log("Ye values jati hai as data", values);
     } catch (error) {
       console.error("Error submitting form:", error.message);
