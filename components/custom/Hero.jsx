@@ -41,15 +41,8 @@ const HeroSection = () => {
       </div>
 
       <div className="flex justify-center gap-4 mt-3">
-        <Button
-          onClick={() => {
-            router.push("/onboarding");
-            console.log("clicked");
-          }}
-          size="lg"
-          className="px-8 cursor-pointer"
-        >
-          Get Started
+        <Button asChild size="lg" className="px-8 cursor-pointer">
+          <Link href="/dashboard">Get Started</Link>
         </Button>
 
         <Button
