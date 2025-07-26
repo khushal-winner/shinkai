@@ -8,22 +8,16 @@ import { industries } from "@/data/industries";
 const OnboardingPage = async () => {
   // check if user is already onboarded
 
-  try {
-    const { isOnboarded } = await getUserOnboardingStatus();
+  const { isOnboarded } = await getUserOnboardingStatus();
 
-    if (isOnboarded) {
-      redirect("/dashboard");
-    }
-  } catch (error) {
-    // Handle auth/db errors gracefully
-    console.error("Error in onboarding check:", error.message);
-    redirect("/"); // stay here if error
+  if (isOnboarded) {
+    redirect("/dashboard");
   }
 
   return (
     <div className="w-full ">
       <div className="space-y-2 mb-4 containter px-4">
-        <h1 className="text-4xl md:text-6xl font-bold gradient-title gradient">
+        <h1 className="text-5xl font-bold gradient-title gradient">
           Onboarding Form
         </h1>
         <p className="text-muted-foreground">
