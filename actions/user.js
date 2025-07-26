@@ -75,8 +75,10 @@ export async function getUserOnboardingStatus() {
       clerkUserId: userId,
     },
   });
+  setTimeout(() => {
+    if (!user) throw new Error("User not found");
+  }, 5000);
 
-  if (!user) throw new Error("User not found");
   try {
     const user = await db.user.findUnique({
       where: {
