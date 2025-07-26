@@ -67,32 +67,52 @@ export async function updateUser(data) {
 }
 
 export async function getUserOnboardingStatus() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const user = await db.user.findUnique({
-    where: {
-      clerkUserId: userId,
-    },
-  });
-  setTimeout(() => {
-    if (!user) throw new Error("User not found");
-  }, 5000);
-
   try {
-    const user = await db.user.findUnique({
-      where: {
-        clerkUserId: userId,
-      },
-      select: {
-        industry: true,
-      },
+    // Retry to get Clerk userId (max 5 times)
+    let retries = 5;
+    let userId = null;
+
+    while (retries > 0) {
+      const authResult = await auth();
+      if (authResult?.userId) {
+        userId = authResult.userId;
+        break;
+      }
+
+      await new Promise((res) => setTimeout(res, 1000));
+      retries--;
+    }
+
+    if (!userId) throw new Error("Unauthorized");
+
+    // Retry to get user from DB (max 5 times)
+    retries = 5;
+    let user = null;
+
+    while (retries > 0) {
+      user = await db.user.findUnique({
+        where: { clerkUserId: userId },
+      });
+
+      if (user) break;
+
+      await new Promise((res) => setTimeout(res, 1000));
+      retries--;
+    }
+
+    if (!user) throw new Error("User not found");
+
+    // Finally, check if user is onboarded
+    const onboardedStatus = await db.user.findUnique({
+      where: { clerkUserId: userId },
+      select: { industry: true },
     });
+
     return {
-      isOnboarded: !!user.industry,
+      isOnboarded: !!onboardedStatus?.industry,
     };
   } catch (error) {
-    console.log("Error in getUserOnboardingStatus", error.message);
-    throw new Error("Failed to Get User Onboarding Status");
+    console.error("Error checking onboarding status:", error.message);
+    throw new Error("Failed to check onboarding status");
   }
 }

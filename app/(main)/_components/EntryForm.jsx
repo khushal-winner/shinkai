@@ -167,7 +167,7 @@ const EntryForm = ({ type, entries, onChange }) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+              <div className="space-y-2 ">
                 <Input
                   type="month"
                   {...register("startDate")}
