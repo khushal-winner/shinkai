@@ -60,6 +60,7 @@ export async function updateUser(data) {
         timeout: 10000, // default is 5 seconds
       }
     );
+    return result;
   } catch (error) {
     console.log("Error in updateUser", error.message);
     throw new Error("Failed to Update Profile", { cause: error.message });
